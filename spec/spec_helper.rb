@@ -12,7 +12,7 @@ ActiveRecord::Base.establish_connection(
   :adapter  => "sqlite3"
 )
 
-ar_tables = ["monkeys"]
+ar_tables = ["monkeys", "file_thingies"]
 
 ar_tables.each do |table_name|
   ActiveRecord::Base.connection.create_table table_name, :force => true do |t|

@@ -49,16 +49,16 @@ module ActiveRecord
 
         module ClassMethods
 
-          def has_one_document(name)
+          def has_one_document(name, options={})
             __has_one_documents.delete(name)
             __has_one_documents.push(name)
-            add_has_one_accessors_for(name)
+            add_has_one_accessors_for(name, options)
           end
 
-          def has_many_documents(name)
+          def has_many_documents(name, options={})
             __has_many_documents.delete(name)
             __has_many_documents.push(name)
-            add_has_many_accessors_for(name)
+            add_has_many_accessors_for(name, options)
           end
 
           private
@@ -71,10 +71,10 @@ module ActiveRecord
             @__has_many_documents ||= Array.new
           end
 
-          def add_has_many_accessors_for(name)
+          def add_has_many_accessors_for(name, options={})
             class_eval %Q{
               def #{name}
-                @#{name} ||= #{name.to_s.classify}.where( (self.class.to_s.underscore + "_id").to_sym => id)
+                @#{name} ||= #{options[:class_name] ? options[:class_name] : name.to_s.classify}.where( (self.class.to_s.underscore + "_id").to_sym => id)
               end
 
               def #{name}=(others)
@@ -92,10 +92,10 @@ module ActiveRecord
             }        
           end
 
-          def add_has_one_accessors_for(name)
+          def add_has_one_accessors_for(name, options={})
             class_eval %Q{
               def #{name}
-                @#{name} ||= #{name.to_s.classify}.first(:conditions => {(self.class.to_s.underscore + "_id").to_sym => id})
+                @#{name} ||= #{options[:class_name] ? options[:class_name] : name.to_s.classify}.first(:conditions => {(self.class.to_s.underscore + "_id").to_sym => id})
               end
 
               def #{name}=(other)
